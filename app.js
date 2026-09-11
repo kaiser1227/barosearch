@@ -92,7 +92,6 @@ class BaroSearchApp {
     this.customCategories = [];
     this.activeCategoryIds = ['all', 'shopping', 'news'];
     this.selectedSiteId = null;
-    this.isEditMode = false;
 
     // Trending Ticker State
     this.trendingKeywords = [
@@ -134,11 +133,9 @@ class BaroSearchApp {
     this.trendingList = document.getElementById('trendingList');
     this.trendingUpdateTime = document.getElementById('trendingUpdateTime');
 
-    // Pack Clear & Edit Mode Btns
+    // Pack Clear Btn
     this.clearCategoryPackBtn = document.getElementById('clearCategoryPackBtn');
     this.clearPackBtnLabel = document.getElementById('clearPackBtnLabel');
-    this.toggleEditModeBtn = document.getElementById('toggleEditModeBtn');
-    this.toggleEditModeLabel = document.getElementById('toggleEditModeLabel');
 
     // Category Modal Elements
     this.addCategoryBtn = document.getElementById('addCategoryBtn');
@@ -277,35 +274,11 @@ class BaroSearchApp {
     localStorage.setItem('baro_site_order', JSON.stringify(siteOrder));
   }
 
-  // Update Edit Mode Button UI state
-  updateEditModeUI() {
-    if (!this.toggleEditModeBtn) return;
-    const iconEl = this.toggleEditModeBtn.querySelector('i');
-    if (this.isEditMode) {
-      this.toggleEditModeBtn.className = 'btn btn-primary btn-sm';
-      if (this.toggleEditModeLabel) this.toggleEditModeLabel.textContent = '편집 완료';
-      if (iconEl) iconEl.className = 'fa-solid fa-check';
-      this.showToast('✏️ 편집 모드 켜짐: ◀ ▶ 버튼이나 드래그로 순서를 변경하세요.', 'info');
-    } else {
-      this.toggleEditModeBtn.className = 'btn btn-outline btn-sm';
-      if (this.toggleEditModeLabel) this.toggleEditModeLabel.textContent = '순서/편집';
-      if (iconEl) iconEl.className = 'fa-solid fa-pen-to-square';
-    }
-  }
-
   setupEventListeners() {
-    // Clear Category Pack Button & Edit Mode Toggle
+    // Clear Category Pack Button
     if (this.clearCategoryPackBtn) {
       this.clearCategoryPackBtn.addEventListener('click', () => {
         this.clearCurrentCategorySites();
-      });
-    }
-
-    if (this.toggleEditModeBtn) {
-      this.toggleEditModeBtn.addEventListener('click', () => {
-        this.isEditMode = !this.isEditMode;
-        this.updateEditModeUI();
-        this.renderSites();
       });
     }
 
@@ -340,8 +313,6 @@ class BaroSearchApp {
     this.logoBtn.addEventListener('click', () => {
       this.currentCategory = 'all';
       this.selectedSiteId = null;
-      this.isEditMode = false;
-      this.updateEditModeUI();
       this.renderCategoryTabs();
       this.renderSites();
     });
@@ -481,8 +452,6 @@ class BaroSearchApp {
       btn.addEventListener('click', () => {
         this.currentCategory = cat.id;
         this.selectedSiteId = null;
-        this.isEditMode = false;
-        this.updateEditModeUI();
         this.renderCategoryTabs();
         this.renderSites();
       });
@@ -723,93 +692,71 @@ class BaroSearchApp {
     visibleSites.forEach(site => {
       const isSelected = selectedIds.has(site.id);
       const card = document.createElement('div');
-      card.className = `site-card ${this.isEditMode ? 'edit-mode' : ''} ${isSelected ? 'selected' : ''}`;
-      
-      if (this.isEditMode) {
-        card.setAttribute('draggable', 'true');
-      }
+      card.className = `site-card ${isSelected ? 'selected' : ''}`;
+      card.setAttribute('draggable', 'true');
 
       // Extract domain for favicon
       const domain = this.extractDomain(site.url);
       const faviconUrl = site.icon || `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 
-      const actionsHTML = this.isEditMode ? `
-        <div class="site-actions edit-mode-actions">
+      card.innerHTML = `
+        ${isSelected ? '<span class="selected-badge"><i class="fa-solid fa-check"></i></span>' : ''}
+        <div class="site-actions">
           <button class="site-action-btn move-prev" title="왼쪽으로 이동"><i class="fa-solid fa-chevron-left"></i></button>
           <button class="site-action-btn move-next" title="오른쪽으로 이동"><i class="fa-solid fa-chevron-right"></i></button>
           <button class="site-action-btn edit" title="수정"><i class="fa-solid fa-pen"></i></button>
           <button class="site-action-btn delete" title="삭제"><i class="fa-solid fa-trash"></i></button>
         </div>
-      ` : '';
-
-      card.innerHTML = `
-        ${isSelected ? '<span class="selected-badge"><i class="fa-solid fa-check"></i></span>' : ''}
-        ${actionsHTML}
         <div class="site-icon-wrapper">
           <img class="site-icon" src="${faviconUrl}" alt="${site.name}" onerror="this.src='https://www.google.com/s2/favicons?domain=google.com&sz=64'">
         </div>
         <span class="site-name">${site.name}</span>
       `;
 
-      if (this.isEditMode) {
-        // Drag & Drop Reordering Event Listeners
-        card.addEventListener('dragstart', (e) => {
-          e.dataTransfer.setData('text/plain', site.id);
-          card.classList.add('dragging');
-        });
+      // Drag & Drop Reordering Event Listeners
+      card.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', site.id);
+        card.classList.add('dragging');
+      });
 
-        card.addEventListener('dragend', () => {
-          card.classList.remove('dragging');
-          document.querySelectorAll('.site-card').forEach(c => c.classList.remove('drag-over'));
-        });
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        document.querySelectorAll('.site-card').forEach(c => c.classList.remove('drag-over'));
+      });
 
-        card.addEventListener('dragover', (e) => {
-          e.preventDefault();
-          card.classList.add('drag-over');
-        });
+      card.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        card.classList.add('drag-over');
+      });
 
-        card.addEventListener('dragleave', () => {
-          card.classList.remove('drag-over');
-        });
+      card.addEventListener('dragleave', () => {
+        card.classList.remove('drag-over');
+      });
 
-        card.addEventListener('drop', (e) => {
-          e.preventDefault();
-          card.classList.remove('drag-over');
-          const draggedId = e.dataTransfer.getData('text/plain');
-          if (draggedId && draggedId !== site.id) {
-            this.reorderSites(draggedId, site.id);
-          }
-        });
+      card.addEventListener('drop', (e) => {
+        e.preventDefault();
+        card.classList.remove('drag-over');
+        const draggedId = e.dataTransfer.getData('text/plain');
+        if (draggedId && draggedId !== site.id) {
+          this.reorderSites(draggedId, site.id);
+        }
+      });
 
-        // Move Prev Button Click (<)
-        card.querySelector('.move-prev').addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.moveSiteStep(site.id, -1);
-        });
+      // Move Prev Button Click (<)
+      card.querySelector('.move-prev').addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.moveSiteStep(site.id, -1);
+      });
 
-        // Move Next Button Click (>)
-        card.querySelector('.move-next').addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.moveSiteStep(site.id, 1);
-        });
+      // Move Next Button Click (>)
+      card.querySelector('.move-next').addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.moveSiteStep(site.id, 1);
+      });
 
-        // Edit button click
-        card.querySelector('.edit').addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.openEditSiteModal(site);
-        });
-
-        // Delete/Hide button click
-        card.querySelector('.delete').addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.deleteOrHideSite(site);
-        });
-      }
-
-      // Click card to select site or search (only in normal mode)
+      // Click card to select site or search
       card.addEventListener('click', (e) => {
         if (e.target.closest('.site-action-btn')) return;
-        if (this.isEditMode) return; // Ignore search tap during edit mode
 
         this.selectedSiteId = site.id;
         const query = this.searchInput.value.trim();
