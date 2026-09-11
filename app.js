@@ -200,6 +200,34 @@ class BaroSearchApp {
     return [visible[0]];
   }
 
+  // Reorder site items by dragging fromId to position of toId
+  reorderSites(fromId, toId) {
+    if (fromId === toId) return;
+    const fromIndex = this.sites.findIndex(s => s.id === fromId);
+    const toIndex = this.sites.findIndex(s => s.id === toId);
+
+    if (fromIndex !== -1 && toIndex !== -1) {
+      const [moved] = this.sites.splice(fromIndex, 1);
+      this.sites.splice(toIndex, 0, moved);
+      this.saveState();
+      this.renderSites();
+      this.showToast(`↔️ [${moved.name}] 순서가 변경되었습니다.`, 'info');
+    }
+  }
+
+  // Move site 1 step left (-1) or right (+1) in current active category view
+  moveSiteStep(siteId, direction) {
+    const visible = this.getVisibleSites();
+    const currentIdx = visible.findIndex(s => s.id === siteId);
+    if (currentIdx === -1) return;
+
+    const targetIdx = currentIdx + direction;
+    if (targetIdx < 0 || targetIdx >= visible.length) return;
+
+    const targetSiteId = visible[targetIdx].id;
+    this.reorderSites(siteId, targetSiteId);
+  }
+
   loadState() {
     // 1. Theme
     const savedTheme = localStorage.getItem('baro_theme') || 'dark';
@@ -217,8 +245,19 @@ class BaroSearchApp {
     const customSites = JSON.parse(localStorage.getItem('baro_custom_sites') || '[]');
     this.customCategories = JSON.parse(localStorage.getItem('baro_custom_categories') || '[]');
 
-    // 5. Combine default sites and custom sites
-    this.sites = [...DEFAULT_PRESET_SITES, ...customSites];
+    // 5. Combine default sites and custom sites & apply custom site order if saved
+    const allSites = [...DEFAULT_PRESET_SITES, ...customSites];
+    const savedOrder = JSON.parse(localStorage.getItem('baro_site_order') || '[]');
+    if (savedOrder.length > 0) {
+      allSites.sort((a, b) => {
+        const idxA = savedOrder.indexOf(a.id);
+        const idxB = savedOrder.indexOf(b.id);
+        if (idxA === -1) return 1;
+        if (idxB === -1) return -1;
+        return idxA - idxB;
+      });
+    }
+    this.sites = allSites;
 
     // 6. Recent searches
     this.recentSearches = JSON.parse(localStorage.getItem('baro_recent_searches') || '[]');
@@ -226,11 +265,13 @@ class BaroSearchApp {
 
   saveState() {
     const customSites = this.sites.filter(s => !s.isDefault);
+    const siteOrder = this.sites.map(s => s.id);
     localStorage.setItem('baro_custom_sites', JSON.stringify(customSites));
     localStorage.setItem('baro_custom_categories', JSON.stringify(this.customCategories));
     localStorage.setItem('baro_hidden_ids', JSON.stringify(this.hiddenSiteIds));
     localStorage.setItem('baro_recent_searches', JSON.stringify(this.recentSearches));
     localStorage.setItem('baro_active_categories', JSON.stringify(this.activeCategoryIds));
+    localStorage.setItem('baro_site_order', JSON.stringify(siteOrder));
   }
 
   setupEventListeners() {
@@ -652,6 +693,7 @@ class BaroSearchApp {
       const isSelected = selectedIds.has(site.id);
       const card = document.createElement('div');
       card.className = `site-card ${isSelected ? 'selected' : ''}`;
+      card.setAttribute('draggable', 'true');
 
       // Extract domain for favicon
       const domain = this.extractDomain(site.url);
@@ -660,6 +702,8 @@ class BaroSearchApp {
       card.innerHTML = `
         ${isSelected ? '<span class="selected-badge"><i class="fa-solid fa-check"></i></span>' : ''}
         <div class="site-actions">
+          <button class="site-action-btn move-prev" title="왼쪽으로 이동"><i class="fa-solid fa-chevron-left"></i></button>
+          <button class="site-action-btn move-next" title="오른쪽으로 이동"><i class="fa-solid fa-chevron-right"></i></button>
           <button class="site-action-btn edit" title="수정"><i class="fa-solid fa-pen"></i></button>
           <button class="site-action-btn delete" title="삭제"><i class="fa-solid fa-trash"></i></button>
         </div>
@@ -668,6 +712,47 @@ class BaroSearchApp {
         </div>
         <span class="site-name">${site.name}</span>
       `;
+
+      // Drag & Drop Reordering Event Listeners
+      card.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', site.id);
+        card.classList.add('dragging');
+      });
+
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+        document.querySelectorAll('.site-card').forEach(c => c.classList.remove('drag-over'));
+      });
+
+      card.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        card.classList.add('drag-over');
+      });
+
+      card.addEventListener('dragleave', () => {
+        card.classList.remove('drag-over');
+      });
+
+      card.addEventListener('drop', (e) => {
+        e.preventDefault();
+        card.classList.remove('drag-over');
+        const draggedId = e.dataTransfer.getData('text/plain');
+        if (draggedId && draggedId !== site.id) {
+          this.reorderSites(draggedId, site.id);
+        }
+      });
+
+      // Move Prev Button Click (<)
+      card.querySelector('.move-prev').addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.moveSiteStep(site.id, -1);
+      });
+
+      // Move Next Button Click (>)
+      card.querySelector('.move-next').addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.moveSiteStep(site.id, 1);
+      });
 
       // Click card to select site or search
       card.addEventListener('click', (e) => {
