@@ -1788,7 +1788,29 @@ input:checked + .slider::before {
   border-radius: var(--radius-full);
 }
 
+.btn-guide-toggle {
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: var(--transition);
+}
+
+.btn-guide-toggle:hover,
+.btn-guide-toggle.active {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+  background-color: var(--accent-glow);
+}
+
 .form-guide-card {
+  display: none;
   margin-top: 0.5rem;
   background-color: var(--bg-primary);
   border: 1px solid var(--card-border);
@@ -1796,6 +1818,11 @@ input:checked + .slider::before {
   padding: 0.65rem 0.85rem;
   font-size: 0.82rem;
   color: var(--text-secondary);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.form-guide-card.show {
+  display: block;
 }
 
 .guide-title {

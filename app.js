@@ -178,6 +178,10 @@ class BaroSearchApp {
     this.siteCategorySelect = document.getElementById('siteCategorySelect');
     this.siteUrlInput = document.getElementById('siteUrlInput');
     this.siteIconInput = document.getElementById('siteIconInput');
+    this.toggleUrlGuideBtn = document.getElementById('toggleUrlGuideBtn');
+    this.urlGuideCard = document.getElementById('urlGuideCard');
+    this.toggleIconGuideBtn = document.getElementById('toggleIconGuideBtn');
+    this.iconGuideCard = document.getElementById('iconGuideCard');
 
     // Settings elements
     this.exportDataBtn = document.getElementById('exportDataBtn');
@@ -484,6 +488,23 @@ class BaroSearchApp {
       this.handleSiteFormSubmit();
     });
 
+    // Guide toggle buttons
+    if (this.toggleUrlGuideBtn && this.urlGuideCard) {
+      this.toggleUrlGuideBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isOpen = this.urlGuideCard.classList.toggle('show');
+        this.toggleUrlGuideBtn.classList.toggle('active', isOpen);
+      });
+    }
+
+    if (this.toggleIconGuideBtn && this.iconGuideCard) {
+      this.toggleIconGuideBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isOpen = this.iconGuideCard.classList.toggle('show');
+        this.toggleIconGuideBtn.classList.toggle('active', isOpen);
+      });
+    }
+
     // Preset Pack installation & uninstallation buttons
     document.querySelectorAll('.install-pack-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -639,6 +660,7 @@ class BaroSearchApp {
 
     this.currentCategory = newCat.id;
     this.renderCategoryTabs();
+    this.populateSiteCategorySelect();
     if (this.siteCategorySelect) {
       this.siteCategorySelect.value = newCat.id;
     }
@@ -1157,6 +1179,7 @@ class BaroSearchApp {
       this.showToast(`[${name}] 사이트가 새로 추가되었습니다!`, 'success');
     }
 
+    this.currentCategory = category;
     this.saveState();
     this.renderCategoryTabs();
     this.renderSites();
