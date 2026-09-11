@@ -144,6 +144,7 @@ class BaroSearchApp {
 
     // Category Modal Elements
     this.addCategoryBtn = document.getElementById('addCategoryBtn');
+    this.inlineAddCategoryBtn = document.getElementById('inlineAddCategoryBtn');
     this.categoryModal = document.getElementById('categoryModal');
     this.closeCategoryModalBtn = document.getElementById('closeCategoryModalBtn');
     this.cancelCategoryModalBtn = document.getElementById('cancelCategoryModalBtn');
@@ -444,6 +445,11 @@ class BaroSearchApp {
         this.openAddCategoryModal();
       });
     }
+    if (this.inlineAddCategoryBtn) {
+      this.inlineAddCategoryBtn.addEventListener('click', () => {
+        this.openAddCategoryModal();
+      });
+    }
     if (this.closeCategoryModalBtn) {
       this.closeCategoryModalBtn.addEventListener('click', () => this.closeModal(this.categoryModal));
     }
@@ -633,6 +639,9 @@ class BaroSearchApp {
 
     this.currentCategory = newCat.id;
     this.renderCategoryTabs();
+    if (this.siteCategorySelect) {
+      this.siteCategorySelect.value = newCat.id;
+    }
     this.renderSites();
     this.closeModal(this.categoryModal);
     this.showToast(`✨ [${name}] 카테고리가 새로 추가되었습니다!`, 'success');

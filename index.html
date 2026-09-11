@@ -146,7 +146,12 @@
         </div>
 
         <div class="form-group">
-          <label for="siteCategorySelect">카테고리 <span class="required">*</span></label>
+          <div class="label-with-action">
+            <label for="siteCategorySelect">카테고리 <span class="required">*</span></label>
+            <button type="button" class="btn btn-outline btn-xs inline-add-cat-btn" id="inlineAddCategoryBtn" title="새 카테고리 생성">
+              <i class="fa-solid fa-plus"></i> 새 카테고리
+            </button>
+          </div>
           <select id="siteCategorySelect" class="form-control">
             <option value="shopping">🛍️ 쇼핑</option>
             <option value="news">📰 뉴스/속보</option>
@@ -162,12 +167,34 @@
         <div class="form-group">
           <label for="siteUrlInput">검색 URL 패턴 <span class="required">*</span></label>
           <input type="text" id="siteUrlInput" class="form-control" placeholder="https://example.com/search?q={query}" required>
-          <small class="form-help">검색어가 들어갈 위치에 <code>{query}</code>를 넣어주세요.</small>
+          
+          <div class="form-guide-card">
+            <div class="guide-title"><i class="fa-solid fa-circle-info"></i> 💡 검색 URL 작성 가이드</div>
+            <div class="guide-content">
+              <p>원하는 사이트에서 <strong>'테스트'</strong> 검색 후 주소창 URL을 복사하여, 검색어 위치에 <code>{query}</code>를 넣어주세요.</p>
+              <div class="guide-examples">
+                <div class="example-item"><strong>네이버:</strong> <code>https://search.naver.com/search.naver?query={query}</code></div>
+                <div class="example-item"><strong>쿠팡:</strong> <code>https://www.coupang.com/np/search?q={query}</code></div>
+                <div class="example-item"><strong>유튜브:</strong> <code>https://www.youtube.com/results?search_query={query}</code></div>
+                <div class="example-item"><strong>다음:</strong> <code>https://search.daum.net/search?q={query}</code></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="siteIconInput">로고/아이콘 URL (선택)</label>
-          <input type="url" id="siteIconInput" class="form-control" placeholder="미입력 시 구글 파콘이 자동 적용됩니다.">
+          <input type="url" id="siteIconInput" class="form-control" placeholder="미입력 시 도메인 파비콘이 자동 적용됩니다.">
+          
+          <div class="form-guide-card">
+            <div class="guide-title"><i class="fa-solid fa-image"></i> 💡 아이콘 작성 가이드</div>
+            <div class="guide-content">
+              <ul>
+                <li><strong>미입력 시 (추천):</strong> 입력하지 않고 비워두시면 사이트 도메인의 파비콘(Favicon)이 <strong>자동으로 적용</strong>됩니다!</li>
+                <li><strong>직접 입력 시:</strong> 외부 이미지 웹 링크(예: <code>https://example.com/logo.png</code>)를 복사하여 붙여넣으세요.</li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         <div class="modal-footer">
