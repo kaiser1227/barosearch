@@ -92,6 +92,7 @@ class BaroSearchApp {
     this.customCategories = [];
     this.activeCategoryIds = ['all', 'shopping', 'news'];
     this.selectedSiteId = null;
+    this.isActionBarOpen = false;
 
     // Trending Ticker State
     this.trendingKeywords = [
@@ -323,6 +324,7 @@ class BaroSearchApp {
     this.logoBtn.addEventListener('click', () => {
       this.currentCategory = 'all';
       this.selectedSiteId = null;
+      this.isActionBarOpen = false;
       this.renderCategoryTabs();
       this.renderSites();
     });
@@ -354,8 +356,8 @@ class BaroSearchApp {
     }
     if (this.actionBarCloseBtn) {
       this.actionBarCloseBtn.addEventListener('click', () => {
-        this.selectedSiteId = null;
-        this.renderSites();
+        this.isActionBarOpen = false;
+        this.updateFloatingActionBar();
       });
     }
 
@@ -494,6 +496,7 @@ class BaroSearchApp {
       btn.addEventListener('click', () => {
         this.currentCategory = cat.id;
         this.selectedSiteId = null;
+        this.isActionBarOpen = false;
         this.renderCategoryTabs();
         this.renderSites();
       });
@@ -784,7 +787,12 @@ class BaroSearchApp {
         const query = this.searchInput.value.trim();
 
         if (!query) {
-          this.selectedSiteId = (this.selectedSiteId === site.id) ? null : site.id;
+          if (this.selectedSiteId === site.id) {
+            this.isActionBarOpen = !this.isActionBarOpen;
+          } else {
+            this.selectedSiteId = site.id;
+            this.isActionBarOpen = true;
+          }
           this.renderSites();
           return;
         }
@@ -810,7 +818,7 @@ class BaroSearchApp {
     if (!this.floatingActionBar) return;
     const isBatchMode = this.batchSearchCheckbox && this.batchSearchCheckbox.checked;
 
-    if (!isBatchMode && this.selectedSiteId) {
+    if (!isBatchMode && this.selectedSiteId && this.isActionBarOpen) {
       const visible = this.getVisibleSites();
       const selectedSite = visible.find(s => s.id === this.selectedSiteId);
       if (selectedSite) {
@@ -1074,6 +1082,11 @@ class BaroSearchApp {
     } else {
       // Custom sites are completely removed
       this.sites = this.sites.filter(s => s.id !== site.id);
+    }
+
+    if (this.selectedSiteId === site.id) {
+      this.selectedSiteId = null;
+      this.isActionBarOpen = false;
     }
 
     this.saveState();
