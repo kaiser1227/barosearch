@@ -366,6 +366,28 @@ class BaroSearchApp {
       this.searchSubmitBtn.addEventListener('click', performSearch);
     }
 
+    // Clear search text button handler & real-time visibility toggle
+    const updateClearBtnVisibility = () => {
+      if (this.clearSearchBtn) {
+        const hasText = this.searchInput.value.trim().length > 0;
+        this.clearSearchBtn.style.display = hasText ? 'flex' : 'none';
+      }
+    };
+
+    this.searchInput.addEventListener('input', updateClearBtnVisibility);
+
+    if (this.clearSearchBtn) {
+      this.clearSearchBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.searchInput.value = '';
+        this.searchInput.focus();
+        updateClearBtnVisibility();
+      });
+    }
+
+    // Initial check
+    updateClearBtnVisibility();
+
     this.searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         performSearch();
