@@ -380,6 +380,28 @@ input:checked + .slider::before {
   transform: translateX(16px);
 }
 
+.switch-label.compact {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+  gap: 0.45rem;
+}
+
+.switch-label.compact .slider {
+  width: 30px;
+  height: 16px;
+}
+
+.switch-label.compact .slider::before {
+  width: 10px;
+  height: 10px;
+  left: 3px;
+  top: 3px;
+}
+
+.switch-label.compact input:checked + .slider::before {
+  transform: translateX(14px);
+}
+
 /* Category Nav Tabs */
 .category-nav {
   margin-bottom: 2rem;
