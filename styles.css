@@ -2,30 +2,30 @@
    바로서치 (BaroSearch) - Design System & Modern CSS Variables
    ========================================================================== */
 :root {
-  /* Color Palette - Dark Theme (Default) */
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
+  /* Color Palette - Dark Sky-Blue Theme (Default) */
+  --bg-primary: #0b1528;
+  --bg-secondary: #17253d;
+  --bg-tertiary: #273956;
   
-  --card-bg: rgba(30, 41, 59, 0.7);
+  --card-bg: rgba(23, 37, 61, 0.75);
   --card-border: rgba(255, 255, 255, 0.08);
-  --card-hover-border: rgba(99, 102, 241, 0.5);
+  --card-hover-border: rgba(14, 165, 233, 0.55);
   
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   
-  --accent-color: #6366f1;
-  --accent-hover: #4f46e5;
-  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
-  --accent-glow: rgba(99, 102, 241, 0.35);
+  --accent-color: #0ea5e9;
+  --accent-hover: #0284c7;
+  --accent-gradient: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 50%, #0284c7 100%);
+  --accent-glow: rgba(14, 165, 233, 0.35);
   
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
 
-  --modal-backdrop: rgba(15, 23, 42, 0.75);
-  --glass-bg: rgba(15, 23, 42, 0.85);
+  --modal-backdrop: rgba(11, 21, 40, 0.78);
+  --glass-bg: rgba(11, 21, 40, 0.85);
   --glass-border: rgba(255, 255, 255, 0.1);
   
   --radius-sm: 8px;
@@ -42,21 +42,21 @@
 }
 
 [data-theme="light"] {
-  --bg-primary: #f1f5f9;
+  --bg-primary: #f0f9ff;
   --bg-secondary: #ffffff;
-  --bg-tertiary: #e2e8f0;
+  --bg-tertiary: #e0f2fe;
   
-  --card-bg: rgba(255, 255, 255, 0.85);
-  --card-border: rgba(0, 0, 0, 0.06);
-  --card-hover-border: rgba(99, 102, 241, 0.6);
+  --card-bg: rgba(255, 255, 255, 0.88);
+  --card-border: rgba(14, 165, 233, 0.12);
+  --card-hover-border: rgba(14, 165, 233, 0.6);
   
   --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
   
   --modal-backdrop: rgba(15, 23, 42, 0.4);
-  --glass-bg: rgba(255, 255, 255, 0.9);
-  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.92);
+  --glass-border: rgba(14, 165, 233, 0.15);
 }
 
 /* ==========================================================================
@@ -77,8 +77,9 @@ body {
   display: flex;
   flex-direction: column;
   background-image: 
-    radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
-    radial-gradient(circle at 85% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 40%);
+    radial-gradient(circle at 15% 20%, rgba(14, 165, 233, 0.16) 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 50% 40%, rgba(2, 132, 199, 0.08) 0%, transparent 60%);
   background-attachment: fixed;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -208,7 +209,7 @@ body {
 
 .btn-outline:hover {
   border-color: var(--accent-color);
-  background-color: rgba(99, 102, 241, 0.1);
+  background-color: rgba(14, 165, 233, 0.1);
 }
 
 .btn-danger {
@@ -879,9 +880,9 @@ input:checked + .slider::before {
 
 .pack-icon.shopping { background: linear-gradient(135deg, #f59e0b, #ef4444); }
 .pack-icon.news { background: linear-gradient(135deg, #ef4444, #f97316); }
-.pack-icon.dev { background: linear-gradient(135deg, #3b82f6, #6366f1); }
+.pack-icon.dev { background: linear-gradient(135deg, #0284c7, #0ea5e9); }
 .pack-icon.academic { background: linear-gradient(135deg, #10b981, #059669); }
-.pack-icon.community { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
+.pack-icon.community { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
 .pack-icon.ai { background: linear-gradient(135deg, #06b6d4, #3b82f6); }
 
 .pack-info {
