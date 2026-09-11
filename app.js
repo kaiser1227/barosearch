@@ -367,30 +367,16 @@ class BaroSearchApp {
       }
     });
 
-    // Select All Sites Button
-    if (this.selectAllSitesBtn) {
-      this.selectAllSitesBtn.addEventListener('click', () => {
-        const visibleSites = this.getVisibleSites();
-        const allSelected = visibleSites.length > 0 && visibleSites.every(s => this.selectedSiteIds.has(s.id));
-
-        if (allSelected) {
-          visibleSites.forEach(s => this.selectedSiteIds.delete(s.id));
-        } else {
-          visibleSites.forEach(s => this.selectedSiteIds.add(s.id));
-        }
+    // Logo reset to home
+    if (this.logoBtn) {
+      this.logoBtn.addEventListener('click', () => {
+        this.currentCategory = 'all';
+        this.selectedSiteId = null;
+        this.isActionBarOpen = false;
+        this.renderCategoryTabs();
         this.renderSites();
       });
     }
-    });
-
-    // Logo reset to home
-    this.logoBtn.addEventListener('click', () => {
-      this.currentCategory = 'all';
-      this.selectedSiteId = null;
-      this.isActionBarOpen = false;
-      this.renderCategoryTabs();
-      this.renderSites();
-    });
 
     // Context Menu Event Listeners
     if (this.contextMoveLeftBtn) {
@@ -431,15 +417,32 @@ class BaroSearchApp {
       }
     });
 
-    // Header Action Buttons
-    this.addCustomSiteBtn.addEventListener('click', () => this.openAddSiteModal());
-    this.presetPacksBtn.addEventListener('click', () => this.openModal(this.presetPacksModal));
-    this.settingsBtn.addEventListener('click', () => this.openModal(this.settingsModal));
-    this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
+    // Action & Settings Buttons
+    if (this.addCustomSiteBtn) {
+      this.addCustomSiteBtn.addEventListener('click', () => {
+        this.closeModal(this.settingsModal);
+        this.openAddSiteModal();
+      });
+    }
+    if (this.presetPacksBtn) {
+      this.presetPacksBtn.addEventListener('click', () => {
+        this.closeModal(this.settingsModal);
+        this.openModal(this.presetPacksModal);
+      });
+    }
+    if (this.settingsBtn) {
+      this.settingsBtn.addEventListener('click', () => this.openModal(this.settingsModal));
+    }
+    if (this.themeToggleBtn) {
+      this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
+    }
 
     // Category Modal Handlers
     if (this.addCategoryBtn) {
-      this.addCategoryBtn.addEventListener('click', () => this.openAddCategoryModal());
+      this.addCategoryBtn.addEventListener('click', () => {
+        this.closeModal(this.settingsModal);
+        this.openAddCategoryModal();
+      });
     }
     if (this.closeCategoryModalBtn) {
       this.closeCategoryModalBtn.addEventListener('click', () => this.closeModal(this.categoryModal));

@@ -30,14 +30,6 @@
       </div>
 
       <div class="header-actions">
-        <button class="btn btn-icon" id="presetPacksBtn" title="추천 팩 관리">
-          <i class="fa-solid fa-cubes"></i>
-          <span class="btn-label">추천 팩</span>
-        </button>
-        <button class="btn btn-icon" id="addCustomSiteBtn" title="사이트 직접 추가">
-          <i class="fa-solid fa-plus"></i>
-          <span class="btn-label">사이트 추가</span>
-        </button>
         <button class="btn btn-icon" id="settingsBtn" title="사이트 관리 & 설정">
           <i class="fa-solid fa-sliders"></i>
           <span class="btn-label">사이트 관리</span>
@@ -113,22 +105,14 @@
           <i class="fa-solid fa-chevron-right"></i>
         </button>
       </div>
-      <button class="btn btn-outline btn-sm add-category-btn" id="addCategoryBtn" title="나만의 카테고리 추가">
-        <i class="fa-solid fa-folder-plus"></i> <span class="btn-label">카테고리 추가</span>
-      </button>
     </nav>
 
     <!-- Search Buttons Grid Container -->
     <section class="search-grid-section">
       <div class="grid-header">
         <div class="grid-title-group">
-          <span class="grid-title" id="currentCategoryTitle">🚀 검색 대상 사이트 (다중 선택 가능)</span>
+          <span class="grid-title" id="currentCategoryTitle">🚀 검색 대상 사이트</span>
           <span class="site-count-badge" id="siteCountBadge">0개 선택됨</span>
-        </div>
-        <div class="grid-actions">
-          <button class="btn btn-outline btn-sm" id="selectAllSitesBtn" title="현재 카테고리 전체 선택/해제">
-            <i class="fa-solid fa-square-check"></i> <span id="selectAllBtnLabel">전체 선택</span>
-          </button>
         </div>
       </div>
 
@@ -331,16 +315,26 @@
     </div>
   </div>
 
-  <!-- Settings & Backup Modal -->
+  <!-- Settings & Site Management Modal -->
   <div class="modal-backdrop" id="settingsModal">
     <div class="modal-card">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-sliders"></i> 바로서치 설정 및 데이터 백업</h3>
+        <h3><i class="fa-solid fa-sliders"></i> 사이트 관리 및 설정</h3>
         <button class="modal-close" id="closeSettingsModalBtn"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
         <div class="settings-section">
-          <h4><i class="fa-solid fa-database"></i> 데이터 관리</h4>
+          <h4><i class="fa-solid fa-layer-group"></i> 사이트 및 카테고리 추가</h4>
+          <p>원하는 사이트나 추천 팩, 신규 카테고리를 자유롭게 추가하세요.</p>
+          <div class="settings-btn-group">
+            <button class="btn btn-primary" id="addCustomSiteBtn"><i class="fa-solid fa-plus"></i> 나만의 사이트 추가</button>
+            <button class="btn btn-outline" id="presetPacksBtn"><i class="fa-solid fa-cubes"></i> 추천 팩 설치/관리</button>
+            <button class="btn btn-outline" id="addCategoryBtn"><i class="fa-solid fa-folder-plus"></i> 새 카테고리 추가</button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h4><i class="fa-solid fa-database"></i> 데이터 백업 및 복원</h4>
           <p>내 사이트 및 커스텀 설정을 파일로 백업하거나 복원할 수 있습니다.</p>
           <div class="settings-btn-group">
             <button class="btn btn-outline" id="exportDataBtn"><i class="fa-solid fa-download"></i> 백업 파일 다운로드 (.json)</button>
