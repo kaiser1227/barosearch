@@ -588,6 +588,29 @@ input:checked + .slider::before {
   min-width: 0;
 }
 
+.site-card.edit-mode {
+  border: 1.5px dashed var(--accent-color);
+  background-color: var(--card-bg);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.site-card.edit-mode[draggable="true"] {
+  cursor: grab;
+}
+
+.site-card.edit-mode.dragging {
+  opacity: 0.35;
+  border-style: solid;
+  transform: scale(0.96);
+}
+
+.site-card.edit-mode.drag-over {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  background-color: var(--bg-tertiary);
+  transform: scale(1.04);
+}
+
 .site-actions {
   position: absolute;
   top: 50%;
@@ -606,9 +629,8 @@ input:checked + .slider::before {
   z-index: 10;
 }
 
-/* Show action menu ONLY when card is selected or hovered */
-.site-card:hover .site-actions,
-.site-card.selected .site-actions {
+/* Show action menu ONLY when in Edit Mode */
+.site-card.edit-mode .site-actions {
   opacity: 1;
   pointer-events: auto;
 }
@@ -1218,10 +1240,9 @@ input:checked + .slider::before {
     border: 1px solid var(--card-border);
   }
 
-  .site-card.selected .site-actions,
-  .site-card:hover .site-actions {
-    opacity: 1;
-    pointer-events: auto;
+  .site-card.edit-mode .site-actions {
+    opacity: 1 !important;
+    pointer-events: auto !important;
   }
 
   .site-action-btn {
