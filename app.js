@@ -94,6 +94,7 @@ class BaroSearchApp {
     this.customCategories = [];
     this.activeCategoryIds = ['all', 'shopping', 'news'];
     this.selectedSiteId = null;
+    this.selectedSiteIds = new Set();
     this.isActionBarOpen = false;
 
     // Trending Ticker State
@@ -136,9 +137,10 @@ class BaroSearchApp {
     this.trendingList = document.getElementById('trendingList');
     this.trendingUpdateTime = document.getElementById('trendingUpdateTime');
 
-    // Pack Clear Btn
-    this.clearCategoryPackBtn = document.getElementById('clearCategoryPackBtn');
-    this.clearPackBtnLabel = document.getElementById('clearPackBtnLabel');
+    // Search submit and select all elements
+    this.searchSubmitBtn = document.getElementById('searchSubmitBtn');
+    this.selectAllSitesBtn = document.getElementById('selectAllSitesBtn');
+    this.selectAllBtnLabel = document.getElementById('selectAllBtnLabel');
 
     // Category Modal Elements
     this.addCategoryBtn = document.getElementById('addCategoryBtn');
@@ -331,38 +333,54 @@ class BaroSearchApp {
       });
     }
 
-    // Clear Category Pack Button
-    if (this.clearCategoryPackBtn) {
-      this.clearCategoryPackBtn.addEventListener('click', () => {
-        this.clearCurrentCategorySites();
-      });
-    }
+    // Search submit button & Enter key
+    const performSearch = () => {
+      const query = this.searchInput.value.trim();
+      if (!query) {
+        this.showToast('🔍 검색어를 입력해 주세요!', 'warning');
+        return;
+      }
+      this.addRecentSearch(query);
+      const visibleSites = this.getVisibleSites();
+      const targetSites = visibleSites.filter(s => this.selectedSiteIds.has(s.id));
 
-    // Search input clear button visibility & Enter key
-    this.searchInput.addEventListener('input', () => {
-      this.clearSearchBtn.style.display = this.searchInput.value ? 'block' : 'none';
-    });
+      if (targetSites.length === 0) {
+        if (visibleSites.length > 0) {
+          this.executeSingleSearch(visibleSites[0], query);
+        } else {
+          this.showToast('검색할 사이트가 없습니다.', 'warning');
+        }
+      } else if (targetSites.length === 1) {
+        this.executeSingleSearch(targetSites[0], query);
+      } else {
+        this.executeBatchSearch(query, targetSites);
+      }
+    };
 
-    this.clearSearchBtn.addEventListener('click', () => {
-      this.searchInput.value = '';
-      this.clearSearchBtn.style.display = 'none';
-      this.searchInput.focus();
-    });
-
-    if (this.batchSearchCheckbox) {
-      this.batchSearchCheckbox.addEventListener('change', () => {
-        this.renderSites();
-      });
+    if (this.searchSubmitBtn) {
+      this.searchSubmitBtn.addEventListener('click', performSearch);
     }
 
     this.searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        const query = this.searchInput.value.trim();
-        if (query) {
-          this.addRecentSearch(query);
-          this.executeBatchSearch(query);
-        }
+        performSearch();
       }
+    });
+
+    // Select All Sites Button
+    if (this.selectAllSitesBtn) {
+      this.selectAllSitesBtn.addEventListener('click', () => {
+        const visibleSites = this.getVisibleSites();
+        const allSelected = visibleSites.length > 0 && visibleSites.every(s => this.selectedSiteIds.has(s.id));
+
+        if (allSelected) {
+          visibleSites.forEach(s => this.selectedSiteIds.delete(s.id));
+        } else {
+          visibleSites.forEach(s => this.selectedSiteIds.add(s.id));
+        }
+        this.renderSites();
+      });
+    }
     });
 
     // Logo reset to home
@@ -758,18 +776,16 @@ class BaroSearchApp {
   renderSites() {
     const allCatList = [...CATEGORIES, ...this.customCategories];
     const activeCategoryObj = allCatList.find(c => c.id === this.currentCategory);
-    this.currentCategoryTitle.textContent = activeCategoryObj ? activeCategoryObj.title : '🚀 전체 사이트';
-
-    if (this.clearPackBtnLabel) {
-      if (this.currentCategory === 'all') {
-        this.clearPackBtnLabel.textContent = '숨겨진 팩/사이트 초기화';
-      } else {
-        this.clearPackBtnLabel.textContent = `${activeCategoryObj ? activeCategoryObj.name : ''} 팩 전체 삭제`;
-      }
-    }
+    this.currentCategoryTitle.textContent = activeCategoryObj ? activeCategoryObj.title : '🚀 검색 대상 사이트 (다중 선택 가능)';
 
     const visibleSites = this.getVisibleSites();
-    this.siteCountBadge.textContent = `${visibleSites.length}개 사이트`;
+    const selectedCount = visibleSites.filter(s => this.selectedSiteIds.has(s.id)).length;
+    this.siteCountBadge.textContent = `${selectedCount}개 선택됨 / 총 ${visibleSites.length}개`;
+
+    if (this.selectAllBtnLabel) {
+      const allSelected = visibleSites.length > 0 && selectedCount === visibleSites.length;
+      this.selectAllBtnLabel.textContent = allSelected ? '전체 해제' : '전체 선택';
+    }
 
     this.searchGrid.innerHTML = '';
 
@@ -777,24 +793,23 @@ class BaroSearchApp {
       this.searchGrid.innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
           <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-          <p>등록된 사이트가 없습니다. 상단의 <strong>[사이트 추가]</strong>나 <strong>[추천 팩]</strong> 버튼을 이용해 보세요!</p>
+          <p>등록된 사이트가 없습니다. 상단의 <strong>[사이트 관리]</strong> 버튼을 이용해 보세요!</p>
         </div>
       `;
       return;
     }
 
-    const selectedSites = this.getSelectedSites();
-    const selectedIds = new Set(selectedSites.map(s => s.id));
-
     visibleSites.forEach(site => {
+      const isSelected = this.selectedSiteIds.has(site.id);
       const card = document.createElement('div');
-      card.className = 'site-card';
+      card.className = `site-card ${isSelected ? 'selected' : ''}`;
       card.setAttribute('draggable', 'true');
 
       const domain = this.extractDomain(site.url);
       const faviconUrl = site.icon || `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 
       card.innerHTML = `
+        ${isSelected ? '<span class="selected-badge"><i class="fa-solid fa-check"></i></span>' : ''}
         <div class="card-menu-trigger" title="사이트 메뉴/순서 변경">
           <i class="fa-solid fa-ellipsis-vertical"></i>
         </div>
@@ -867,22 +882,28 @@ class BaroSearchApp {
         if (touchTimer) clearTimeout(touchTimer);
       });
 
-      // Click card to execute search immediately
+      // Click card to toggle selection or execute search
       card.addEventListener('click', (e) => {
         if (e.target.closest('.card-menu-trigger')) return;
 
         const query = this.searchInput.value.trim();
 
         if (!query) {
-          this.searchInput.focus();
-          this.showToast(`🔍 [${site.name}] 검색어를 입력한 후 클릭하세요!`, 'info');
+          // Toggle selection
+          if (this.selectedSiteIds.has(site.id)) {
+            this.selectedSiteIds.delete(site.id);
+          } else {
+            this.selectedSiteIds.add(site.id);
+          }
+          this.renderSites();
           return;
         }
 
         this.addRecentSearch(query);
 
-        if (this.batchSearchCheckbox && this.batchSearchCheckbox.checked) {
-          this.executeBatchSearch(query);
+        if (this.selectedSiteIds.size > 0 && this.selectedSiteIds.has(site.id)) {
+          const targetSites = visibleSites.filter(s => this.selectedSiteIds.has(s.id));
+          this.executeBatchSearch(query, targetSites);
         } else {
           this.executeSingleSearch(site, query);
         }

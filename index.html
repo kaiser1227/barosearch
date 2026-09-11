@@ -30,7 +30,7 @@
       </div>
 
       <div class="header-actions">
-        <button class="btn btn-icon" id="presetPacksBtn" title="1클릭 팩 추가">
+        <button class="btn btn-icon" id="presetPacksBtn" title="추천 팩 관리">
           <i class="fa-solid fa-cubes"></i>
           <span class="btn-label">추천 팩</span>
         </button>
@@ -38,8 +38,9 @@
           <i class="fa-solid fa-plus"></i>
           <span class="btn-label">사이트 추가</span>
         </button>
-        <button class="btn btn-icon" id="settingsBtn" title="설정 및 백업">
-          <i class="fa-solid fa-gear"></i>
+        <button class="btn btn-icon" id="settingsBtn" title="사이트 관리 & 설정">
+          <i class="fa-solid fa-sliders"></i>
+          <span class="btn-label">사이트 관리</span>
         </button>
         <button class="btn btn-icon theme-toggle" id="themeToggleBtn" title="테마 변경">
           <i class="fa-solid fa-moon"></i>
@@ -52,7 +53,7 @@
   <main class="main-content">
     <div class="hero-section">
       <h1 class="hero-title">어디든 <span class="highlight">1초 만에 바로</span> 검색하세요</h1>
-      <p class="hero-subtitle">검색어를 치고 원하는 사이트를 클릭하면 한 번에 바로 연결됩니다.</p>
+      <p class="hero-subtitle">원하는 사이트들을 클릭하여 선택한 후 검색하면 한 번에 바로 연결됩니다.</p>
       
       <!-- Primary Search Form -->
       <div class="search-box-wrapper">
@@ -68,6 +69,9 @@
           >
           <button id="clearSearchBtn" class="clear-btn" title="지우기">
             <i class="fa-solid fa-xmark"></i>
+          </button>
+          <button id="searchSubmitBtn" class="search-submit-btn" title="선택된 사이트 동시 검색">
+            <i class="fa-solid fa-paper-plane"></i> <span>검색</span>
           </button>
         </div>
       </div>
@@ -118,19 +122,12 @@
     <section class="search-grid-section">
       <div class="grid-header">
         <div class="grid-title-group">
-          <span class="grid-title" id="currentCategoryTitle">🚀 전체 사이트</span>
-          <span class="site-count-badge" id="siteCountBadge">0개 사이트</span>
+          <span class="grid-title" id="currentCategoryTitle">🚀 검색 대상 사이트 (다중 선택 가능)</span>
+          <span class="site-count-badge" id="siteCountBadge">0개 선택됨</span>
         </div>
         <div class="grid-actions">
-          <div class="batch-search-toggle">
-            <label class="switch-label compact" title="선택된 카테고리의 모든 사이트를 한 번에 동시 검색합니다">
-              <input type="checkbox" id="batchSearchCheckbox">
-              <span class="slider"></span>
-              <span class="toggle-text"><i class="fa-solid fa-layer-group"></i> 전체 동시 검색</span>
-            </label>
-          </div>
-          <button class="btn btn-outline btn-sm btn-danger-outline" id="clearCategoryPackBtn" title="현재 카테고리의 모든 사이트를 삭제/숨기기 합니다">
-            <i class="fa-solid fa-trash-can"></i> <span id="clearPackBtnLabel">현재 팩 전체 삭제</span>
+          <button class="btn btn-outline btn-sm" id="selectAllSitesBtn" title="현재 카테고리 전체 선택/해제">
+            <i class="fa-solid fa-square-check"></i> <span id="selectAllBtnLabel">전체 선택</span>
           </button>
         </div>
       </div>
