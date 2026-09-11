@@ -596,15 +596,21 @@ input:checked + .slider::before {
   display: flex;
   gap: 2px;
   opacity: 0;
+  pointer-events: none;
   background: var(--bg-secondary);
   padding: 2px;
   border-radius: var(--radius-sm);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   transition: var(--transition);
-  z-index: 5;
+  z-index: 10;
 }
 
-.site-card:hover .site-actions {
+/* Show action menu ONLY when card is selected or hovered */
+.site-card:hover .site-actions,
+.site-card.selected .site-actions {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .site-action-btn {
@@ -1206,8 +1212,16 @@ input:checked + .slider::before {
   }
 
   .site-actions {
-    opacity: 0.7; /* Keep edit/delete buttons reachable on touchscreen */
-    background: rgba(15, 23, 42, 0.85);
+    opacity: 0;
+    pointer-events: none;
+    background: var(--bg-secondary);
+    border: 1px solid var(--card-border);
+  }
+
+  .site-card.selected .site-actions,
+  .site-card:hover .site-actions {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .site-action-btn {
