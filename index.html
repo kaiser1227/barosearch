@@ -361,30 +361,24 @@
     </div>
   </div>
 
-  <!-- Floating Bottom Action Bar (Appears when site is selected) -->
-  <div class="floating-action-bar" id="floatingActionBar">
-    <div class="action-bar-content">
-      <div class="action-bar-info">
-        <img class="action-bar-icon" id="actionBarSiteIcon" src="https://www.google.com/s2/favicons?domain=google.com&sz=64" alt="">
-        <span class="action-bar-title" id="actionBarSiteName">사이트 선택됨</span>
-      </div>
-      <div class="action-bar-buttons">
-        <button class="action-bar-btn" id="actionBarMoveLeftBtn" title="왼쪽으로 이동">
-          <i class="fa-solid fa-chevron-left"></i> <span>이동</span>
-        </button>
-        <button class="action-bar-btn" id="actionBarMoveRightBtn" title="오른쪽으로 이동">
-          <span>이동</span> <i class="fa-solid fa-chevron-right"></i>
-        </button>
-        <button class="action-bar-btn" id="actionBarEditBtn" title="사이트 정보 수정">
-          <i class="fa-solid fa-pen"></i> <span>수정</span>
-        </button>
-        <button class="action-bar-btn danger" id="actionBarDeleteBtn" title="사이트 삭제/숨기기">
-          <i class="fa-solid fa-trash"></i> <span>삭제</span>
-        </button>
-        <button class="action-bar-btn close" id="actionBarCloseBtn" title="닫기">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
+  <!-- Mini Context Popover Menu (Appears on long-press/right-click/options click) -->
+  <div class="card-context-menu" id="cardContextMenu" style="display: none;">
+    <div class="context-menu-header">
+      <span class="context-menu-title" id="contextMenuTitle">사이트</span>
+    </div>
+    <div class="context-menu-items">
+      <button class="context-menu-item" id="contextMoveLeftBtn">
+        <i class="fa-solid fa-arrow-left"></i> <span>왼쪽으로 이동</span>
+      </button>
+      <button class="context-menu-item" id="contextMoveRightBtn">
+        <i class="fa-solid fa-arrow-right"></i> <span>오른쪽으로 이동</span>
+      </button>
+      <button class="context-menu-item" id="contextEditBtn">
+        <i class="fa-solid fa-pen-to-square"></i> <span>사이트 수정</span>
+      </button>
+      <button class="context-menu-item danger" id="contextDeleteBtn">
+        <i class="fa-solid fa-trash-can"></i> <span>사이트 삭제</span>
+      </button>
     </div>
   </div>
 

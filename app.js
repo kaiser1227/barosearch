@@ -180,15 +180,40 @@ class BaroSearchApp {
     this.importFileInput = document.getElementById('importFileInput');
     this.resetDataBtn = document.getElementById('resetDataBtn');
 
-    // Floating Bottom Action Bar Elements
-    this.floatingActionBar = document.getElementById('floatingActionBar');
-    this.actionBarSiteIcon = document.getElementById('actionBarSiteIcon');
-    this.actionBarSiteName = document.getElementById('actionBarSiteName');
-    this.actionBarMoveLeftBtn = document.getElementById('actionBarMoveLeftBtn');
-    this.actionBarMoveRightBtn = document.getElementById('actionBarMoveRightBtn');
-    this.actionBarEditBtn = document.getElementById('actionBarEditBtn');
-    this.actionBarDeleteBtn = document.getElementById('actionBarDeleteBtn');
-    this.actionBarCloseBtn = document.getElementById('actionBarCloseBtn');
+    // Mini Popover Context Menu Elements
+    this.cardContextMenu = document.getElementById('cardContextMenu');
+    this.contextMenuTitle = document.getElementById('contextMenuTitle');
+    this.contextMoveLeftBtn = document.getElementById('contextMoveLeftBtn');
+    this.contextMoveRightBtn = document.getElementById('contextMoveRightBtn');
+    this.contextEditBtn = document.getElementById('contextEditBtn');
+    this.contextDeleteBtn = document.getElementById('contextDeleteBtn');
+    this.contextTargetSite = null;
+  }
+
+  // Show popover context menu for a site card
+  showContextMenu(site, x, y) {
+    if (!this.cardContextMenu) return;
+    this.contextTargetSite = site;
+    if (this.contextMenuTitle) this.contextMenuTitle.textContent = site.name;
+
+    this.cardContextMenu.style.display = 'flex';
+
+    const menuWidth = 170;
+    const menuHeight = 160;
+    let posX = Math.min(x, window.innerWidth - menuWidth - 10);
+    let posY = Math.min(y, window.innerHeight - menuHeight - 10);
+    posX = Math.max(10, posX);
+    posY = Math.max(10, posY);
+
+    this.cardContextMenu.style.left = `${posX}px`;
+    this.cardContextMenu.style.top = `${posY}px`;
+  }
+
+  hideContextMenu() {
+    if (this.cardContextMenu) {
+      this.cardContextMenu.style.display = 'none';
+      this.contextTargetSite = null;
+    }
   }
 
   // Get active categories list
@@ -329,37 +354,44 @@ class BaroSearchApp {
       this.renderSites();
     });
 
-    // Floating Bottom Action Bar Listeners
-    if (this.actionBarMoveLeftBtn) {
-      this.actionBarMoveLeftBtn.addEventListener('click', () => {
-        const sites = this.getSelectedSites();
-        if (sites.length === 1) this.moveSiteStep(sites[0].id, -1);
+    // Context Menu Event Listeners
+    if (this.contextMoveLeftBtn) {
+      this.contextMoveLeftBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (this.contextTargetSite) this.moveSiteStep(this.contextTargetSite.id, -1);
+        this.hideContextMenu();
       });
     }
-    if (this.actionBarMoveRightBtn) {
-      this.actionBarMoveRightBtn.addEventListener('click', () => {
-        const sites = this.getSelectedSites();
-        if (sites.length === 1) this.moveSiteStep(sites[0].id, 1);
+    if (this.contextMoveRightBtn) {
+      this.contextMoveRightBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (this.contextTargetSite) this.moveSiteStep(this.contextTargetSite.id, 1);
+        this.hideContextMenu();
       });
     }
-    if (this.actionBarEditBtn) {
-      this.actionBarEditBtn.addEventListener('click', () => {
-        const sites = this.getSelectedSites();
-        if (sites.length === 1) this.openEditSiteModal(sites[0]);
+    if (this.contextEditBtn) {
+      this.contextEditBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const target = this.contextTargetSite;
+        this.hideContextMenu();
+        if (target) this.openEditSiteModal(target);
       });
     }
-    if (this.actionBarDeleteBtn) {
-      this.actionBarDeleteBtn.addEventListener('click', () => {
-        const sites = this.getSelectedSites();
-        if (sites.length === 1) this.deleteOrHideSite(sites[0]);
+    if (this.contextDeleteBtn) {
+      this.contextDeleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const target = this.contextTargetSite;
+        this.hideContextMenu();
+        if (target) this.deleteOrHideSite(target);
       });
     }
-    if (this.actionBarCloseBtn) {
-      this.actionBarCloseBtn.addEventListener('click', () => {
-        this.isActionBarOpen = false;
-        this.updateFloatingActionBar();
-      });
-    }
+
+    // Close Context Menu on click outside
+    document.addEventListener('click', (e) => {
+      if (this.cardContextMenu && !e.target.closest('#cardContextMenu') && !e.target.closest('.card-menu-trigger')) {
+        this.hideContextMenu();
+      }
+    });
 
     // Header Action Buttons
     this.addCustomSiteBtn.addEventListener('click', () => this.openAddSiteModal());
@@ -735,17 +767,17 @@ class BaroSearchApp {
     const selectedIds = new Set(selectedSites.map(s => s.id));
 
     visibleSites.forEach(site => {
-      const isSelected = selectedIds.has(site.id);
       const card = document.createElement('div');
-      card.className = `site-card ${isSelected ? 'selected' : ''}`;
+      card.className = 'site-card';
       card.setAttribute('draggable', 'true');
 
-      // Extract domain for favicon
       const domain = this.extractDomain(site.url);
       const faviconUrl = site.icon || `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
 
       card.innerHTML = `
-        ${isSelected ? '<span class="selected-badge"><i class="fa-solid fa-check"></i></span>' : ''}
+        <div class="card-menu-trigger" title="사이트 메뉴/순서 변경">
+          <i class="fa-solid fa-ellipsis-vertical"></i>
+        </div>
         <div class="site-icon-wrapper">
           <img class="site-icon" src="${faviconUrl}" alt="${site.name}" onerror="this.src='https://www.google.com/s2/favicons?domain=google.com&sz=64'">
         </div>
@@ -781,23 +813,52 @@ class BaroSearchApp {
         }
       });
 
+      // Context menu trigger (⋮) button click
+      const menuTrigger = card.querySelector('.card-menu-trigger');
+      if (menuTrigger) {
+        menuTrigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const rect = menuTrigger.getBoundingClientRect();
+          this.showContextMenu(site, rect.left - 130, rect.bottom + 5);
+        });
+      }
 
-      // Click card to select site or search
-      card.addEventListener('click', () => {
+      // Context menu trigger on Right-Click
+      card.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        this.showContextMenu(site, e.clientX, e.clientY);
+      });
+
+      // Touch long press for mobile
+      let touchTimer = null;
+      card.addEventListener('touchstart', (e) => {
+        touchTimer = setTimeout(() => {
+          if (e.touches && e.touches[0]) {
+            this.showContextMenu(site, e.touches[0].clientX, e.touches[0].clientY);
+          }
+        }, 500);
+      }, { passive: true });
+
+      card.addEventListener('touchend', () => {
+        if (touchTimer) clearTimeout(touchTimer);
+      });
+
+      card.addEventListener('touchmove', () => {
+        if (touchTimer) clearTimeout(touchTimer);
+      });
+
+      // Click card to execute search immediately
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.card-menu-trigger')) return;
+
         const query = this.searchInput.value.trim();
 
         if (!query) {
-          if (this.selectedSiteId === site.id) {
-            this.isActionBarOpen = !this.isActionBarOpen;
-          } else {
-            this.selectedSiteId = site.id;
-            this.isActionBarOpen = true;
-          }
-          this.renderSites();
+          this.searchInput.focus();
+          this.showToast(`🔍 [${site.name}] 검색어를 입력한 후 클릭하세요!`, 'info');
           return;
         }
 
-        this.selectedSiteId = site.id;
         this.addRecentSearch(query);
 
         if (this.batchSearchCheckbox && this.batchSearchCheckbox.checked) {
@@ -809,28 +870,6 @@ class BaroSearchApp {
 
       this.searchGrid.appendChild(card);
     });
-
-    this.updateFloatingActionBar();
-  }
-
-  // Update floating bottom action bar state
-  updateFloatingActionBar() {
-    if (!this.floatingActionBar) return;
-    const isBatchMode = this.batchSearchCheckbox && this.batchSearchCheckbox.checked;
-
-    if (!isBatchMode && this.selectedSiteId && this.isActionBarOpen) {
-      const visible = this.getVisibleSites();
-      const selectedSite = visible.find(s => s.id === this.selectedSiteId);
-      if (selectedSite) {
-        const domain = this.extractDomain(selectedSite.url);
-        const faviconUrl = selectedSite.icon || `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-        if (this.actionBarSiteIcon) this.actionBarSiteIcon.src = faviconUrl;
-        if (this.actionBarSiteName) this.actionBarSiteName.textContent = selectedSite.name;
-        this.floatingActionBar.classList.add('active');
-        return;
-      }
-    }
-    this.floatingActionBar.classList.remove('active');
   }
 
   // Execute single site search in new tab
