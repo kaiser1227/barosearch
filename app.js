@@ -178,6 +178,16 @@ class BaroSearchApp {
     this.importDataBtn = document.getElementById('importDataBtn');
     this.importFileInput = document.getElementById('importFileInput');
     this.resetDataBtn = document.getElementById('resetDataBtn');
+
+    // Floating Bottom Action Bar Elements
+    this.floatingActionBar = document.getElementById('floatingActionBar');
+    this.actionBarSiteIcon = document.getElementById('actionBarSiteIcon');
+    this.actionBarSiteName = document.getElementById('actionBarSiteName');
+    this.actionBarMoveLeftBtn = document.getElementById('actionBarMoveLeftBtn');
+    this.actionBarMoveRightBtn = document.getElementById('actionBarMoveRightBtn');
+    this.actionBarEditBtn = document.getElementById('actionBarEditBtn');
+    this.actionBarDeleteBtn = document.getElementById('actionBarDeleteBtn');
+    this.actionBarCloseBtn = document.getElementById('actionBarCloseBtn');
   }
 
   // Get active categories list
@@ -197,7 +207,7 @@ class BaroSearchApp {
       const found = visible.find(s => s.id === this.selectedSiteId);
       if (found) return [found];
     }
-    return [visible[0]];
+    return [];
   }
 
   // Reorder site items by dragging fromId to position of toId
@@ -316,6 +326,38 @@ class BaroSearchApp {
       this.renderCategoryTabs();
       this.renderSites();
     });
+
+    // Floating Bottom Action Bar Listeners
+    if (this.actionBarMoveLeftBtn) {
+      this.actionBarMoveLeftBtn.addEventListener('click', () => {
+        const sites = this.getSelectedSites();
+        if (sites.length === 1) this.moveSiteStep(sites[0].id, -1);
+      });
+    }
+    if (this.actionBarMoveRightBtn) {
+      this.actionBarMoveRightBtn.addEventListener('click', () => {
+        const sites = this.getSelectedSites();
+        if (sites.length === 1) this.moveSiteStep(sites[0].id, 1);
+      });
+    }
+    if (this.actionBarEditBtn) {
+      this.actionBarEditBtn.addEventListener('click', () => {
+        const sites = this.getSelectedSites();
+        if (sites.length === 1) this.openEditSiteModal(sites[0]);
+      });
+    }
+    if (this.actionBarDeleteBtn) {
+      this.actionBarDeleteBtn.addEventListener('click', () => {
+        const sites = this.getSelectedSites();
+        if (sites.length === 1) this.deleteOrHideSite(sites[0]);
+      });
+    }
+    if (this.actionBarCloseBtn) {
+      this.actionBarCloseBtn.addEventListener('click', () => {
+        this.selectedSiteId = null;
+        this.renderSites();
+      });
+    }
 
     // Header Action Buttons
     this.addCustomSiteBtn.addEventListener('click', () => this.openAddSiteModal());
@@ -701,12 +743,6 @@ class BaroSearchApp {
 
       card.innerHTML = `
         ${isSelected ? '<span class="selected-badge"><i class="fa-solid fa-check"></i></span>' : ''}
-        <div class="site-actions">
-          <button class="site-action-btn move-prev" title="왼쪽으로 이동"><i class="fa-solid fa-chevron-left"></i></button>
-          <button class="site-action-btn move-next" title="오른쪽으로 이동"><i class="fa-solid fa-chevron-right"></i></button>
-          <button class="site-action-btn edit" title="수정"><i class="fa-solid fa-pen"></i></button>
-          <button class="site-action-btn delete" title="삭제"><i class="fa-solid fa-trash"></i></button>
-        </div>
         <div class="site-icon-wrapper">
           <img class="site-icon" src="${faviconUrl}" alt="${site.name}" onerror="this.src='https://www.google.com/s2/favicons?domain=google.com&sz=64'">
         </div>
@@ -742,30 +778,18 @@ class BaroSearchApp {
         }
       });
 
-      // Move Prev Button Click (<)
-      card.querySelector('.move-prev').addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.moveSiteStep(site.id, -1);
-      });
-
-      // Move Next Button Click (>)
-      card.querySelector('.move-next').addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.moveSiteStep(site.id, 1);
-      });
 
       // Click card to select site or search
-      card.addEventListener('click', (e) => {
-        if (e.target.closest('.site-action-btn')) return;
-
-        this.selectedSiteId = site.id;
+      card.addEventListener('click', () => {
         const query = this.searchInput.value.trim();
 
         if (!query) {
+          this.selectedSiteId = (this.selectedSiteId === site.id) ? null : site.id;
           this.renderSites();
           return;
         }
 
+        this.selectedSiteId = site.id;
         this.addRecentSearch(query);
 
         if (this.batchSearchCheckbox && this.batchSearchCheckbox.checked) {
@@ -775,20 +799,30 @@ class BaroSearchApp {
         }
       });
 
-      // Edit button click
-      card.querySelector('.edit').addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.openEditSiteModal(site);
-      });
-
-      // Delete/Hide button click
-      card.querySelector('.delete').addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.deleteOrHideSite(site);
-      });
-
       this.searchGrid.appendChild(card);
     });
+
+    this.updateFloatingActionBar();
+  }
+
+  // Update floating bottom action bar state
+  updateFloatingActionBar() {
+    if (!this.floatingActionBar) return;
+    const isBatchMode = this.batchSearchCheckbox && this.batchSearchCheckbox.checked;
+
+    if (!isBatchMode && this.selectedSiteId) {
+      const visible = this.getVisibleSites();
+      const selectedSite = visible.find(s => s.id === this.selectedSiteId);
+      if (selectedSite) {
+        const domain = this.extractDomain(selectedSite.url);
+        const faviconUrl = selectedSite.icon || `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+        if (this.actionBarSiteIcon) this.actionBarSiteIcon.src = faviconUrl;
+        if (this.actionBarSiteName) this.actionBarSiteName.textContent = selectedSite.name;
+        this.floatingActionBar.classList.add('active');
+        return;
+      }
+    }
+    this.floatingActionBar.classList.remove('active');
   }
 
   // Execute single site search in new tab
@@ -800,10 +834,15 @@ class BaroSearchApp {
 
   // Execute batch multi-search in new tabs for target sites (defaults to selected sites)
   executeBatchSearch(query, targetSites = null) {
-    const sitesToSearch = targetSites || this.getSelectedSites();
+    let sitesToSearch = targetSites || this.getSelectedSites();
     if (sitesToSearch.length === 0) {
-      this.showToast('선택된 검색 사이트가 없습니다.', 'warning');
-      return;
+      const visible = this.getVisibleSites();
+      if (visible.length > 0) {
+        sitesToSearch = [visible[0]];
+      } else {
+        this.showToast('선택된 검색 사이트가 없습니다.', 'warning');
+        return;
+      }
     }
 
     if (sitesToSearch.length === 1) {
