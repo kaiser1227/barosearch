@@ -1725,6 +1725,31 @@ input:checked + .slider::before {
   }
 }
 
+/* Footer Version Badge */
+.version-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-secondary);
+  color: var(--accent-color);
+  border: 1px solid var(--card-border);
+  margin: 0 0.35rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.version-badge:hover {
+  background: var(--accent-gradient);
+  color: #ffffff;
+  border-color: transparent;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+
 
 
 

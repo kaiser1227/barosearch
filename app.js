@@ -3,6 +3,8 @@
  * JavaScript Application Core Logic
  */
 
+const APP_VERSION = 'v2.4.0';
+
 // Initial Default Search Sites Presets Database
 const DEFAULT_PRESET_SITES = [
   // 🛍️ Shopping (쇼핑)
@@ -297,6 +299,15 @@ class BaroSearchApp {
 
     // 6. Recent searches
     this.recentSearches = JSON.parse(localStorage.getItem('baro_recent_searches') || '[]');
+
+    // 7. Version check & update notification
+    const savedVersion = localStorage.getItem('baro_app_version');
+    if (savedVersion !== APP_VERSION) {
+      localStorage.setItem('baro_app_version', APP_VERSION);
+      setTimeout(() => {
+        this.showToast(`🚀 바로서치가 ${APP_VERSION} (구글 포털 에디션)으로 최신 업데이트되었습니다!`, 'success');
+      }, 500);
+    }
   }
 
   saveState() {
@@ -311,6 +322,15 @@ class BaroSearchApp {
   }
 
   setupEventListeners() {
+    // Version Badge Click Event
+    const versionBadge = document.getElementById('appVersionBadge');
+    if (versionBadge) {
+      versionBadge.textContent = APP_VERSION;
+      versionBadge.addEventListener('click', () => {
+        this.showToast(`✨ 현재 바로서치 버전을 확인 중입니다: ${APP_VERSION} (최신 배포 상태)`, 'info');
+      });
+    }
+
     // Clear Category Pack Button
     if (this.clearCategoryPackBtn) {
       this.clearCategoryPackBtn.addEventListener('click', () => {
