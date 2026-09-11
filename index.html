@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>바로서치 (BaroSearch) - 1초 만에 완성하는 통합 멀티 검색</title>
+  <meta name="description" content="단 한 번의 검색어 입력으로 쿠팡, 네이버, 유튜브, 구글, 학술지, 커뮤니티 등 원하는 사이트를 1초 만에 바로 검색하세요.">
+  <meta name="keywords" content="바로서치, BaroSearch, 멀티검색, 통합검색, 모아검색, 시작페이지, 빠른검색, 쇼핑검색">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="바로서치 (BaroSearch) - 1초 통합 멀티 검색">
+  <meta property="og:description" content="원하는 사이트를 미리 등록해 두고 1초 만에 바로바로 검색하는 스마트 멀티 서치 포털">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-logo" id="logoBtn">
+        <div class="logo-icon"><i class="fa-solid fa-bolt"></i></div>
+        <span class="logo-text">바로서치<span class="logo-badge">PRO</span></span>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn btn-icon" id="presetPacksBtn" title="1클릭 팩 추가">
+          <i class="fa-solid fa-cubes"></i>
+          <span class="btn-label">추천 팩</span>
+        </button>
+        <button class="btn btn-icon" id="addCustomSiteBtn" title="사이트 직접 추가">
+          <i class="fa-solid fa-plus"></i>
+          <span class="btn-label">사이트 추가</span>
+        </button>
+        <button class="btn btn-icon" id="settingsBtn" title="설정 및 백업">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+        <button class="btn btn-icon theme-toggle" id="themeToggleBtn" title="테마 변경">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero & Main Search Container -->
+  <main class="main-content">
+    <div class="hero-section">
+      <h1 class="hero-title">어디든 <span class="highlight">1초 만에 바로</span> 검색하세요</h1>
+      <p class="hero-subtitle">검색어를 치고 원하는 사이트를 클릭하면 한 번에 바로 연결됩니다.</p>
+      
+      <!-- Primary Search Form -->
+      <div class="search-box-wrapper">
+        <div class="search-input-group">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="검색어를 입력하세요 (예: 단백질, 아이폰16, VLOOKUP...)"
+            autocomplete="off"
+            autofocus
+          >
+          <button id="clearSearchBtn" class="clear-btn" title="지우기">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Real-Time Rolling Trend Ticker Bar -->
+      <div class="trending-ticker-bar" id="trendingTickerBar">
+        <div class="ticker-badge"><i class="fa-solid fa-fire"></i> 실시간 트렌드</div>
+        <div class="ticker-wrapper" id="tickerWrapper" title="클릭하여 Top 10 실시간 랭킹 전체보기">
+          <div class="ticker-content" id="tickerContent">
+            <span class="ticker-item"><strong class="rank-num">1</strong> <span class="keyword">로딩 중...</span></span>
+          </div>
+        </div>
+        <button class="ticker-toggle-btn" id="tickerToggleBtn" title="전체 순위 열기/닫기">
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+
+        <!-- Dropdown Top 10 Trend Layer -->
+        <div class="trending-dropdown" id="trendingDropdown">
+          <div class="dropdown-header">
+            <span><i class="fa-solid fa-chart-line"></i> 실시간 핫 이슈 키워드 TOP 10</span>
+            <span class="update-time" id="trendingUpdateTime">실시간 갱신</span>
+          </div>
+          <div class="trending-list" id="trendingList">
+            <!-- Dynamic 1~10 rankings JS rendered -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="search-controls">
+        <div class="batch-search-toggle">
+          <label class="switch-label">
+            <input type="checkbox" id="batchSearchCheckbox">
+            <span class="slider"></span>
+            <span class="toggle-text"><i class="fa-solid fa-layer-group"></i> 현재 탭 전체 동시 검색</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Tabs Navigation -->
+    <nav class="category-nav">
+      <div class="category-scroll-wrapper">
+        <button class="scroll-arrow-btn left" id="catScrollLeftBtn" title="이전 카테고리 보기">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <div class="tabs-scroll-container" id="categoryTabs">
+          <!-- Dynamic Category Tabs JS generated -->
+        </div>
+        <button class="scroll-arrow-btn right" id="catScrollRightBtn" title="다음 카테고리 보기">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+      <button class="btn btn-outline btn-sm add-category-btn" id="addCategoryBtn" title="나만의 카테고리 추가">
+        <i class="fa-solid fa-folder-plus"></i> <span class="btn-label">카테고리 추가</span>
+      </button>
+    </nav>
+
+    <!-- Search Buttons Grid Container -->
+    <section class="search-grid-section">
+      <div class="grid-header">
+        <div class="grid-title-group">
+          <span class="grid-title" id="currentCategoryTitle">🚀 전체 사이트</span>
+          <span class="site-count-badge" id="siteCountBadge">0개 사이트</span>
+        </div>
+        <div class="grid-actions">
+          <button class="btn btn-outline btn-sm btn-danger-outline" id="clearCategoryPackBtn" title="현재 카테고리의 모든 사이트를 삭제/숨기기 합니다">
+            <i class="fa-solid fa-trash-can"></i> <span id="clearPackBtnLabel">현재 팩 전체 삭제</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="search-grid" id="searchGrid">
+        <!-- Site Cards Rendered Here Dynamically -->
+      </div>
+    </section>
+
+    <!-- Recent Searches / Quick Links -->
+    <section class="recent-searches-section" id="recentSearchesSection">
+      <div class="section-label"><i class="fa-solid fa-clock-rotate-left"></i> 최근 검색어</div>
+      <div class="recent-tags-list" id="recentTagsList">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Add / Edit Site Modal -->
+  <div class="modal-backdrop" id="siteModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle"><i class="fa-solid fa-plus-circle"></i> 나만의 사이트 추가</h3>
+        <button class="modal-close" id="closeSiteModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="siteForm" class="modal-body">
+        <input type="hidden" id="editSiteId">
+        
+        <div class="form-group">
+          <label for="siteNameInput">사이트 이름 <span class="required">*</span></label>
+          <input type="text" id="siteNameInput" class="form-control" placeholder="예: 당근마켓, 디시인사이드" required>
+        </div>
+
+        <div class="form-group">
+          <label for="siteCategorySelect">카테고리 <span class="required">*</span></label>
+          <select id="siteCategorySelect" class="form-control">
+            <option value="shopping">🛍️ 쇼핑</option>
+            <option value="news">📰 뉴스/속보</option>
+            <option value="portal">🔍 포털/영상</option>
+            <option value="dev">💻 개발/지식</option>
+            <option value="academic">📚 학술/정보</option>
+            <option value="finance">📈 금융/경제</option>
+            <option value="community">🎮 커뮤니티</option>
+            <option value="ai">🤖 AI 툴</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="siteUrlInput">검색 URL 패턴 <span class="required">*</span></label>
+          <input type="text" id="siteUrlInput" class="form-control" placeholder="https://example.com/search?q={query}" required>
+          <small class="form-help">검색어가 들어갈 위치에 <code>{query}</code>를 넣어주세요.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="siteIconInput">로고/아이콘 URL (선택)</label>
+          <input type="url" id="siteIconInput" class="form-control" placeholder="미입력 시 구글 파콘이 자동 적용됩니다.">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelSiteModalBtn">취소</button>
+          <button type="submit" class="btn btn-primary" id="saveSiteBtn">저장하기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Custom Category Modal -->
+  <div class="modal-backdrop" id="categoryModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-folder-plus"></i> 나만의 카테고리 추가</h3>
+        <button class="modal-close" id="closeCategoryModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="categoryForm" class="modal-body">
+        <div class="form-group">
+          <label for="categoryEmojiInput">이모지 (선택)</label>
+          <input type="text" id="categoryEmojiInput" class="form-control" placeholder="예: ✈️, 🎨, 🏠, 🎮" value="📂" maxlength="4">
+        </div>
+
+        <div class="form-group">
+          <label for="categoryNameInput">카테고리 이름 <span class="required">*</span></label>
+          <input type="text" id="categoryNameInput" class="form-control" placeholder="예: 여행 최저가, 디자인 툴, 부동산" required>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelCategoryModalBtn">취소</button>
+          <button type="submit" class="btn btn-primary" id="saveCategoryBtn">생성하기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Recommended Preset Packs Modal -->
+  <div class="modal-backdrop" id="presetPacksModal">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-cubes"></i> 1클릭 추천 꿀조합 팩</h3>
+        <button class="modal-close" id="closePresetPacksModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-intro">주제별 사이트 묶음을 클릭 한번으로 간편하게 추가하거나 한 번에 삭제할 수 있습니다.</p>
+        
+        <div class="packs-grid">
+          <div class="pack-card">
+            <div class="pack-icon shopping"><i class="fa-solid fa-cart-shopping"></i></div>
+            <div class="pack-info">
+              <h4>🛒 최저가 쇼핑 끝판왕 팩</h4>
+              <p>쿠팡, 네이버쇼핑, 11번가, 알리익스프레스, 다나와, 에누리, G마켓, 당근마켓</p>
+            </div>
+            <div class="pack-actions">
+              <button class="btn btn-primary btn-sm install-pack-btn" data-pack="shopping"><i class="fa-solid fa-plus"></i> 추가</button>
+              <button class="btn btn-outline btn-sm btn-danger-outline uninstall-pack-btn" data-pack="shopping"><i class="fa-solid fa-trash-can"></i> 삭제</button>
+            </div>
+          </div>
+
+          <div class="pack-card">
+            <div class="pack-icon news"><i class="fa-solid fa-newspaper"></i></div>
+            <div class="pack-info">
+              <h4>📰 실시간 뉴스 & 언론사 팩</h4>
+              <p>네이버뉴스, 구글뉴스, 다음뉴스, 조선일보, 중앙일보, 동아일보, 연합뉴스, 매일경제, 한국경제</p>
+            </div>
+            <div class="pack-actions">
+              <button class="btn btn-primary btn-sm install-pack-btn" data-pack="news"><i class="fa-solid fa-plus"></i> 추가</button>
+              <button class="btn btn-outline btn-sm btn-danger-outline uninstall-pack-btn" data-pack="news"><i class="fa-solid fa-trash-can"></i> 삭제</button>
+            </div>
+          </div>
+
+          <div class="pack-card">
+            <div class="pack-icon dev"><i class="fa-solid fa-code"></i></div>
+            <div class="pack-info">
+              <h4>💻 마법의 개발자 팩</h4>
+              <p>Google, StackOverflow, GitHub, NPM, PyPI, ChatGPT, Claude, MDN</p>
+            </div>
+            <div class="pack-actions">
+              <button class="btn btn-primary btn-sm install-pack-btn" data-pack="dev"><i class="fa-solid fa-plus"></i> 추가</button>
+              <button class="btn btn-outline btn-sm btn-danger-outline uninstall-pack-btn" data-pack="dev"><i class="fa-solid fa-trash-can"></i> 삭제</button>
+            </div>
+          </div>
+
+          <div class="pack-card">
+            <div class="pack-icon academic"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="pack-info">
+              <h4>📚 대학원생 & 연구원 논문 팩</h4>
+              <p>Google Scholar, RISS, DBpia, KCI, PubMed, arXiv, 위키백과, 나무위키</p>
+            </div>
+            <div class="pack-actions">
+              <button class="btn btn-primary btn-sm install-pack-btn" data-pack="academic"><i class="fa-solid fa-plus"></i> 추가</button>
+              <button class="btn btn-outline btn-sm btn-danger-outline uninstall-pack-btn" data-pack="academic"><i class="fa-solid fa-trash-can"></i> 삭제</button>
+            </div>
+          </div>
+
+          <div class="pack-card">
+            <div class="pack-icon community"><i class="fa-solid fa-comments"></i></div>
+            <div class="pack-info">
+              <h4>🎮 커뮤니티 & 이슈 탐색 팩</h4>
+              <p>디시인사이드, 에펨코리아, 네이버 카페, 인벤, 블라인드, 엑스(Twitter), 보배드림</p>
+            </div>
+            <div class="pack-actions">
+              <button class="btn btn-primary btn-sm install-pack-btn" data-pack="community"><i class="fa-solid fa-plus"></i> 추가</button>
+              <button class="btn btn-outline btn-sm btn-danger-outline uninstall-pack-btn" data-pack="community"><i class="fa-solid fa-trash-can"></i> 삭제</button>
+            </div>
+          </div>
+
+          <div class="pack-card">
+            <div class="pack-icon portal"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <div class="pack-info">
+              <h4>🔍 포털 & 영상 검색 팩</h4>
+              <p>구글, 네이버, 다음, 유튜브, 나무위키, 치지직</p>
+            </div>
+            <div class="pack-actions">
+              <button class="btn btn-primary btn-sm install-pack-btn" data-pack="portal"><i class="fa-solid fa-plus"></i> 추가</button>
+              <button class="btn btn-outline btn-sm btn-danger-outline uninstall-pack-btn" data-pack="portal"><i class="fa-solid fa-trash-can"></i> 삭제</button>
+            </div>
+          </div>
+
+          <div class="pack-card">
+            <div class="pack-icon finance"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="pack-info">
+              <h4>📈 금융 & 증시 경제 팩</h4>
+              <p>네이버 증권, 업비트(가상자산), 국세청 홈택스</p>
+            </div>
+            <div class="pack-actions">
+              <button class="btn btn-primary btn-sm install-pack-btn" data-pack="finance"><i class="fa-solid fa-plus"></i> 추가</button>
+              <button class="btn btn-outline btn-sm btn-danger-outline uninstall-pack-btn" data-pack="finance"><i class="fa-solid fa-trash-can"></i> 삭제</button>
+            </div>
+          </div>
+
+          <div class="pack-card">
+            <div class="pack-icon ai"><i class="fa-solid fa-robot"></i></div>
+            <div class="pack-info">
+              <h4>🤖 AI & 혁신 툴 팩</h4>
+              <p>ChatGPT, Claude, Gemini, Perplexity, Midjourney, ProductHunt</p>
+            </div>
+            <div class="pack-actions">
+              <button class="btn btn-primary btn-sm install-pack-btn" data-pack="ai"><i class="fa-solid fa-plus"></i> 추가</button>
+              <button class="btn btn-outline btn-sm btn-danger-outline uninstall-pack-btn" data-pack="ai"><i class="fa-solid fa-trash-can"></i> 삭제</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings & Backup Modal -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-sliders"></i> 바로서치 설정 및 데이터 백업</h3>
+        <button class="modal-close" id="closeSettingsModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-section">
+          <h4><i class="fa-solid fa-database"></i> 데이터 관리</h4>
+          <p>내 사이트 및 커스텀 설정을 파일로 백업하거나 복원할 수 있습니다.</p>
+          <div class="settings-btn-group">
+            <button class="btn btn-outline" id="exportDataBtn"><i class="fa-solid fa-download"></i> 백업 파일 다운로드 (.json)</button>
+            <button class="btn btn-outline" id="importDataBtn"><i class="fa-solid fa-upload"></i> 백업 파일 불러오기</button>
+            <input type="file" id="importFileInput" accept=".json" style="display:none;">
+          </div>
+        </div>
+
+        <div class="settings-section warning-zone">
+          <h4><i class="fa-solid fa-triangle-exclamation"></i> 초기화</h4>
+          <p>모든 데이터와 커스텀 설정을 삭제하고 초기 상태로 되돌립니다.</p>
+          <button class="btn btn-danger btn-sm" id="resetDataBtn">초기 상태로 리셋</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>© 2026 <strong>바로서치 (BaroSearch)</strong> · 1초 만에 완성하는 스마트 멀티 검색 포털</p>
+      <p class="footer-subtext">누구나 무료로 이용 가능합니다. 상단 메인 검색창에 검색어를 입력한 후 원하는 사이트 버튼을 클릭하세요.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
