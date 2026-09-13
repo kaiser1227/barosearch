@@ -12,6 +12,10 @@
   <meta property="og:description" content="원하는 사이트를 미리 등록해 두고 1초 만에 바로바로 검색하는 스마트 멀티 서치 포털">
   <meta property="og:type" content="website">
 
+  <!-- Google AdSense -->
+  <meta name="google-adsense-account" content="ca-pub-7996508643839776">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7996508643839776" crossorigin="anonymous"></script>
+
   <!-- Google Fonts & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,11 +29,15 @@
   <header class="app-header">
     <div class="header-container">
       <div class="brand-logo" id="logoBtn">
-        <div class="logo-icon"><i class="fa-solid fa-bolt"></i></div>
-        <span class="logo-text">바로서치<span class="logo-badge">PRO</span></span>
+        <div class="logo-icon"><i class="fa-solid fa-robot"></i></div>
+        <span class="logo-text">바로서치 <span class="logo-badge easy">AI EASY</span></span>
       </div>
 
       <div class="header-actions">
+        <button class="btn btn-icon easy-mode-toggle" id="easyModeBtn" title="초보자/시니어 이지모드 (큰 글씨)">
+          <i class="fa-solid fa-glasses"></i>
+          <span class="btn-label">이지 모드</span>
+        </button>
         <button class="btn btn-icon" id="settingsBtn" title="사이트 관리 & 설정">
           <i class="fa-solid fa-sliders"></i>
           <span class="btn-label">사이트 관리</span>
@@ -44,34 +52,61 @@
   <!-- Hero & Main Search Container -->
   <main class="main-content">
     <div class="hero-section">
-      <h1 class="hero-title">어디든 <span class="highlight">1초 만에 바로</span> 검색하세요</h1>
-      <p class="hero-subtitle">원하는 사이트들을 클릭하여 선택한 후 검색하면 한 번에 바로 연결됩니다.</p>
+      <h1 class="hero-title">AI 질문이 막막할 땐, <span class="highlight">1초 만에 바로</span> 질문하세요</h1>
+      <p class="hero-subtitle">원하는 질문 주제를 클릭하면 AI 맞춤형 질문이 완성되며, 1초 만에 연결됩니다.</p>
       
+      <!-- AI Prompt Wizard Preset Chips -->
+      <div class="prompt-wizard-container" id="promptWizard">
+        <div class="wizard-header">
+          <span class="wizard-title"><i class="fa-solid fa-wand-magic-sparkles"></i> 💡 AI 초보자 프롬프트 마법사</span>
+          <span class="wizard-sub">버튼을 클릭하면 질문 틀이 자동으로 완성됩니다!</span>
+        </div>
+        <div class="wizard-chips" id="wizardChips">
+          <button class="wizard-chip active" data-preset="none"><i class="fa-solid fa-pen-nib"></i> 직접 입력</button>
+          <button class="wizard-chip" data-preset="write"><i class="fa-solid fa-file-lines"></i> 📝 보고서/글쓰기</button>
+          <button class="wizard-chip" data-preset="translate"><i class="fa-solid fa-language"></i> 🌐 자연스러운 번역</button>
+          <button class="wizard-chip" data-preset="summary"><i class="fa-solid fa-list-check"></i> 📊 핵심 3줄 요약</button>
+          <button class="wizard-chip" data-preset="image"><i class="fa-solid fa-image"></i> 🎨 AI 그림 생성</button>
+          <button class="wizard-chip" data-preset="travel"><i class="fa-solid fa-plane"></i> ✈️ 여행 일정 추천</button>
+          <button class="wizard-chip" data-preset="code"><i class="fa-solid fa-code"></i> 💻 코딩 에러 해결</button>
+        </div>
+      </div>
+
       <!-- Primary Search Form -->
       <div class="search-box-wrapper">
         <div class="search-input-group">
-          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <i class="fa-solid fa-robot search-icon"></i>
           <input 
             type="text" 
             id="searchInput" 
             class="search-input" 
-            placeholder="검색어를 입력하세요 (예: 단백질, 아이폰16, VLOOKUP...)"
+            placeholder="AI에게 무엇이든 물어보세요 (예: 60대 건강 관리법, 영어 이메일 작성...)"
             autocomplete="off"
             autofocus
           >
           <button id="clearSearchBtn" class="clear-btn" title="지우기">
             <i class="fa-solid fa-xmark"></i>
           </button>
-          <button id="searchSubmitBtn" class="search-submit-btn" title="선택된 사이트 동시 검색">
-            <i class="fa-solid fa-paper-plane"></i> <span>검색</span>
+          <button id="searchSubmitBtn" class="search-submit-btn" title="선택된 AI 서비스로 바로 질문 전송">
+            <i class="fa-solid fa-paper-plane"></i> <span>AI 질문하기</span>
           </button>
+        </div>
+
+        <!-- Quick AI Direct Launch Bar -->
+        <div class="quick-ai-launch-bar" id="quickAiLaunchBar">
+          <span class="quick-launch-label"><i class="fa-solid fa-bolt"></i> 1초 다이렉트 질문:</span>
+          <button class="quick-ai-btn chatgpt" data-ai="chatgpt"><i class="fa-solid fa-robot"></i> ChatGPT</button>
+          <button class="quick-ai-btn perplexity" data-ai="perplexity"><i class="fa-solid fa-magnifying-glass"></i> Perplexity</button>
+          <button class="quick-ai-btn gemini" data-ai="gemini"><i class="fa-solid fa-sparkles"></i> Gemini</button>
+          <button class="quick-ai-btn wrtn" data-ai="wrtn"><i class="fa-solid fa-feather-pointed"></i> 뤼튼(Wrtn)</button>
+          <button class="quick-ai-btn deepl" data-ai="deepl"><i class="fa-solid fa-globe"></i> DeepL</button>
         </div>
       </div>
 
-      <!-- Real-Time Rolling Trend Ticker Bar -->
+      <!-- Real-Time Rolling AI Tips & Trends Ticker Bar -->
       <div class="trending-ticker-bar" id="trendingTickerBar">
-        <div class="ticker-badge"><i class="fa-solid fa-fire"></i> 실시간 트렌드</div>
-        <div class="ticker-wrapper" id="tickerWrapper" title="클릭하여 Top 10 실시간 랭킹 전체보기">
+        <div class="ticker-badge"><i class="fa-solid fa-lightbulb"></i> AI 활용 꿀팁</div>
+        <div class="ticker-wrapper" id="tickerWrapper" title="클릭하여 AI 활용 꿀팁 & 프롬프트 전체보기">
           <div class="ticker-content" id="tickerContent">
             <span class="ticker-item"><strong class="rank-num">1</strong> <span class="keyword">로딩 중...</span></span>
           </div>
@@ -80,17 +115,18 @@
           <i class="fa-solid fa-chevron-down"></i>
         </button>
 
-        <!-- Dropdown Top 10 Trend Layer -->
+        <!-- Dropdown Top 10 AI Tips Layer -->
         <div class="trending-dropdown" id="trendingDropdown">
           <div class="dropdown-header">
-            <span><i class="fa-solid fa-chart-line"></i> 실시간 핫 이슈 키워드 TOP 10</span>
-            <span class="update-time" id="trendingUpdateTime">실시간 갱신</span>
+            <span><i class="fa-solid fa-graduation-cap"></i> 💡 초보자를 위한 추천 AI 프롬프트 TOP 10</span>
+            <span class="update-time" id="trendingUpdateTime">클릭 시 즉시 입력</span>
           </div>
           <div class="trending-list" id="trendingList">
-            <!-- Dynamic 1~10 rankings JS rendered -->
+            <!-- Dynamic rankings JS rendered -->
           </div>
         </div>
-      </div>    </div>
+      </div>
+    </div>
 
     <!-- Category Tabs Navigation -->
     <nav class="category-nav">
